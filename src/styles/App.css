@@ -64,16 +64,16 @@
     justify-content: space-between;
     align-items: flex-end;
 
-    .inputBox_header_count {
-      color: var(--color-text-light);
-      font-size: 0.75rem;
-      &.is-limit {
-        color: var(--color-danger);
-      }
+  }
+  .inputBox_count {
+    text-align: right;
+    color: var(--color-text-light);
+    font-size: 0.75rem;
+    &.is-limit {
+      color: var(--color-danger);
     }
   }
   textarea {
-    margin-top: var(--space-m);
     width: 100%;
     min-height: 5rem;
   }
@@ -106,13 +106,38 @@
     &[disabled] {
       background-color: var(--color-text-light);
       border-color: var(--color-text-light);
+      pointer-events: none;
     }
   }
-  .inputBox_result {
+}
+.error-message {
+  margin-top: var(--space-s);
+  color: var(--color-danger);
+  font-size: 0.875rem;
+}
+.resultBox {
+  .resultBox_header {
+    display: flex;
+    justify-content: space-between;
+    button {
+      background-color: var(--color-bg);
+      color: var(--color-accent);
+      border-color: var(--color-accent);
+      &:hover {
+        @media (min-width: 769px) {
+          background-color: var(--color-accent-light);
+          color: var(--color-accent);
+        }
+      }
+    }
+  }
+  .resultBox_result {
     padding: var(--space-ss);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     background-color: var(--color-bg);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
   }
 }
 .note {

@@ -1,9 +1,53 @@
 import { useState } from 'react'
 import './styles/App.css'
+import {createMockSummary, type SummaryStyle} from "./utils/summary";
 
 function App() {
+  // 入力した文字
   const [text, setText] = useState("");
+  // スタイル制御
+  const [summaryStyle, setSummaryStyle] =
+  useState<SummaryStyle>("normal");
+  // 結果を保存
+  const [summary, setSummary] = useState("");
 
+const handleSummarize = async () => {
+  if (text.trim().length === 0) return;
+
+  setIsLoading(true);
+  setSummary("");
+  setErrorMessage("");
+
+  try {
+    // 将来的にapiに書き換える
+    const result = await createMockSummary(text, summaryStyle);
+    setSummary(result);
+  } catch (error) {
+    console.error("要約に失敗しました", error);
+    setErrorMessage("要約に失敗しました。もう一度お試しください。");
+  } finally {
+    setIsLoading(false);
+  }
+};
+  // 要約中
+  const [isLoading, setIsLoading] = useState(false);
+  // コピー機能
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(summary);
+    } catch (error) {
+      console.error("コピーに失敗しました", error);
+    }
+  };
+  // 入力クリア
+  const handleClear = () => {
+    setText("");
+    setSummary("");
+    setSummaryStyle("normal");
+  };
+  // エラー表示
+  const [errorMessage, setErrorMessage] = useState("");
+  
   return (
     <>
     <header className="header">
@@ -20,27 +64,105 @@ function App() {
           <div className="inputBox">
             <div className="inputBox_header">
               <h2>要約したい文章</h2>
-              <p className={`inputBox_header_count ${text.length >= 1000 ? "is-limit" : ""}`}>{text.length}/ 1000文字</p>
+              <button
+                type="button"
+                onClick={handleClear}
+                disabled={text.length === 0 && summary.length === 0}
+              >
+                クリア
+              </button>
             </div>
+            <p className={`space-s inputBox_count ${text.length >= 1000 ? "is-limit" : ""}`}>{text.length}/ 1000文字</p>
             <textarea
               value={text}
-              onChange={(e) => setText(e.target.value)}
+              onChange={(e) => {
+                setText(e.target.value);
+                setSummary("");
+                setErrorMessage("");
+              }}
               maxLength={1000}
               placeholder="ここに文章を入力してください"
             />
             <p className="space-ss inputBox_subText">※入力は1,000文字以内。個人情報や機密情報は入力しないでください。</p>
             <h3 className="space-l">要約スタイル</h3>
             <ul className="inputBox_type">
-              <li><button className="active">通常文章</button></li>
-              <li><button>箇条書き</button></li>
+              <li>
+                <button
+                type="button"
+                className={summaryStyle === "normal" ? "active" : ""}
+                onClick={() => {
+                  setSummaryStyle("normal");
+                  setSummary("");
+                  setErrorMessage("");
+                }}
+                >
+                通常要約
+                </button>
+              </li>
+
+              <li>
+                <button
+                type="button"
+                className={summaryStyle === "bullet" ? "active" : ""}
+                onClick={() => {
+                  setSummaryStyle("bullet");
+                  setSummary("");
+                  setErrorMessage("");
+                }}
+                >
+                箇条書き
+                </button>
+              </li>
+
+              <li>
+                <button
+                type="button"
+                className={summaryStyle === "simple" ? "active" : ""}
+                onClick={() => {
+                  setSummaryStyle("simple");
+                  setSummary("");
+                  setErrorMessage("");
+                }}
+                >
+                やさしい表現
+                </button>
+              </li>
             </ul>
-            <button className="space-m inputBox_btn" disabled={text.trim().length === 0}>文章を要約する</button>
+            <button
+              className="space-m inputBox_btn" 
+              disabled={text.trim().length === 0 || isLoading}
+              onClick={handleSummarize}
+            >
+              {isLoading ? "要約中…" : "文章を要約する"}
+            </button>
+          </div>
+
+{errorMessage && (
+  <p className="error-message" role="alert">
+    {errorMessage}
+  </p>
+)}
+
+        </div>
+        {summary && (
+        <div className="defaultBox space-m">
+          <div className="resultBox">
             <div>
-              <h3 className="space-l">要約結果</h3>
-              <div className="space-m inputBox_result"><p>結果標示</p></div>
+              <div className="resultBox_header">
+                <h3>要約結果</h3>
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  disabled={!summary}
+                >
+                  結果をコピー
+                </button>
+              </div>
+              <div className="space-ss resultBox_result"><p>{summary}</p></div>
             </div>
           </div>
         </div>
+        )}
       </section>
       <div className="space-l note">
         <p>本アプリはポートフォリオおよび機能検証を目的としたデモサービスです。</p>
