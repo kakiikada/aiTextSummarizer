@@ -7,6 +7,14 @@
   --color-accent-light: #F3E5DE;
   --color-border: #E8E1DA;
   --color-danger: #B42318;
+
+  --color-normal: #C87558;
+  --color-normal-light: #F3E5DE;
+  --color-bullet: #7485d3;
+  --color-bullet-light: #dadef0;
+  --color-simple: #77ba7c;
+  --color-simple-light: #d9ebda;
+
   --shadow: rgba(0, 0, 0, 0.05) 0.125rem 0.25rem 0.25rem 0;
 
   --font-family: 'Noto+Sans+JP', sans-serif;
@@ -19,11 +27,13 @@
   --space-s: 1rem;
   --space-m: 1.5rem;
   --space-l: 3rem;
+  @media (max-width: 769px) {
+    --space-ss: 0.25rem;
+    --space-s: 0.5rem;
+    --space-m: 1rem;
+    --space-l: 2rem;
+  }
   --contentsSize: 1024px;
-
-  /* @media (max-width: 1024px) {
-    font-size: 16px;
-  } */
 }
 
 #root {
@@ -37,6 +47,11 @@ body {
   color: var(--color-text);
   margin: 0;
   background-color: var(--color-base);
+
+  font-size: 1rem;
+  @media (max-width: 769px) {
+    font-size: 0.875rem;
+  }
 }
 
 input, textarea {
@@ -44,6 +59,9 @@ input, textarea {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   background-color: var(--color-bg);
+}
+textarea {
+  resize: vertical;
 }
 input[type = submit], button {
   text-align: center;
@@ -53,6 +71,11 @@ input[type = submit], button {
   padding: var(--space-ss);
   border: 1px solid var(--color-accent);
   transition: .2s;
+  &[disabled] {
+    background-color: var(--color-text-light);
+    border-color: var(--color-text-light);
+    pointer-events: none;  
+  }
   &:hover {
     @media (min-width: 769px) {
       background-color: var(--color-accent-light);

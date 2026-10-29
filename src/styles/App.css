@@ -1,7 +1,7 @@
 .contents {
   max-width: var(--contentsSize);
   margin: 0 auto;
-  padding: var(--space-l)  var(--space-s);
+  padding: var(--space-s);
 }
 .defaultBox {
   padding: var(--space-s);
@@ -35,6 +35,9 @@
       padding-left: 3.5rem;
       position: relative;
       line-height: 1;
+      @media (max-width: 769px) {
+        padding-left: 2.5rem;
+      }
       &::before {
         content: '';
         display: block;
@@ -45,19 +48,51 @@
         background-size: 100%;
         left: 0;
         top: 0;
+        @media (max-width: 769px) {
+          height: 2rem;
+          width: 2rem;
+        }
       }
       .header_content_logo_title{
         font-size: 1.5rem;
+        @media (max-width: 769px) {
+          font-size: 1.25rem;
+        }
       }
     }
     .header_content_logo_text {
       font-size: 0.75rem;
       margin-top: var(--space-ss);
       color: var(--color-text-light);
+      @media (max-width: 769px) {
+        font-size: 0.625rem;
+      }
     }
   }
 }
 /* content */
+.menuList {
+  display: flex;
+  justify-content: end;
+  gap: var(--space-ss);
+  margin-top: var(--space-ss);
+  button {
+    background-color: var(--color-bg);
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    &:hover {
+      @media (min-width: 769px) {
+        background-color: var(--color-accent-light);
+        color: var(--color-accent);
+      }
+    }
+    &.active {
+      color: var(--color-bg);
+      pointer-events: none;
+      background-color: var(--color-accent);
+    }
+  }
+}
 .inputBox {
   .inputBox_header {
     display: flex;
@@ -79,6 +114,7 @@
   }
   .inputBox_subText {
     color: var(--color-text-light);
+    font-size: 0.75rem;
   }
   .inputBox_type {
     display: flex;
@@ -88,14 +124,43 @@
       background-color: var(--color-bg);
       color: var(--color-accent);
       border-color: var(--color-accent);
+      &.normal {
+        border-color: 2px solid var(--color-normal);
+        color: var(--color-normal);
+      }
+      &.bullet {
+        border-color: 2px solid var(--color-bullet);
+        color: var(--color-bullet);
+      }
+      &.simple {
+        border-color: 2px solid var(--color-simple);
+        color: var(--color-simple);
+      }
       &:hover {
         @media (min-width: 769px) {
-          background-color: var(--color-accent-light);
-          color: var(--color-accent);
+          &.normal {
+            background-color: var(--color-normal-light);
+          }
+          &.bullet {
+            background-color: var(--color-bullet-light);
+          }
+          &.simple {
+            background-color: var(--color-simple-light);
+          }
         }
       }
       &.active {
-        background-color: var(--color-accent-light);
+        color: var(--color-bg);
+        pointer-events: none;
+        &.normal {
+          background-color: var(--color-normal);
+        }
+        &.bullet {
+          background-color: var(--color-bullet);
+        }
+        &.simple {
+          background-color: var(--color-simple);
+        }
       }
     }
   }
@@ -103,11 +168,6 @@
     width: 100%;
     max-width: 30rem;
     padding: var(--space-s);
-    &[disabled] {
-      background-color: var(--color-text-light);
-      border-color: var(--color-text-light);
-      pointer-events: none;
-    }
   }
 }
 .error-message {
@@ -145,5 +205,77 @@
   ul {
     list-style-type: disc;
     padding-left: 1.5rem;
+  }
+}
+.historyHeader {
+  .historyHeader_text {
+    font-size: 0.75rem;
+    margin-top: var(--space-ss);
+    color: var(--color-text-light);
+  }
+}
+.historyList {
+  .historyList_item {
+    & + & {
+      margin-top: var(--space-m);
+    }
+    .historyList_item_time {
+      font-size: 0.75rem;
+      color: var(--color-text-light);
+      display: inline-block;
+      margin-right: var(--space-ss);
+    }
+    .historyList_item_style {
+      font-size: 0.75rem;
+      color: var(--color-text-light);
+      display: inline-block;
+      span {
+        color: var(--color-bg);
+        padding: 0.125rem 0.25rem 0.25rem;
+        border-radius: 0.25rem;
+        background-color: var(--color-accent);
+
+        &.normal {
+          background-color: var(--color-normal);
+        }
+        &.bullet {
+          background-color: var(--color-bullet);
+        }
+        &.simple {
+          background-color: var(--color-simple);
+        }
+      }
+    }
+    .historyList_item_inputTitle,
+    .historyList_item_resultTitle,
+    .historyList_item_inputText,
+    .historyList_item_resultText {
+      padding: 0.5rem;
+    }
+    .historyList_item_inputTitle,
+    .historyList_item_resultTitle {
+      font-size: 0.75rem;
+      color: var(--color-accent);
+      display: inline-block;
+      border-radius: 0.25rem 0.25rem 0 0;
+    }
+    .historyList_item_inputText,
+    .historyList_item_resultText {
+      max-height: 6rem;
+      overflow-y: auto;
+      margin-top: -1px;
+    }
+    .historyList_item_inputTitle,
+    .historyList_item_inputText {
+      background-color: var(--color-accent-light);
+    }
+    .historyList_item_resultTitle,
+    .historyList_item_resultText {
+      border: solid 1px var(--color-accent);
+      background-color: var(--color-bg);
+    }
+    .historyList_item_resultTitle {
+      border-bottom: none
+    }
   }
 }

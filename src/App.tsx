@@ -2,6 +2,9 @@ import { useState } from 'react'
 import './styles/App.css'
 import type { SummaryStyle } from "./utils/summary";
 import { summarizeText } from "./services/summaryService";
+// 履歴
+import type { SummaryHistory } from "./types/history";
+import { getHistory, saveHistory } from "./services/historyService";
 
 function App() {
   // 入力した文字
@@ -23,6 +26,23 @@ const handleSummarize = async () => {
     // 外部api連携
     const result = await summarizeText(text, summaryStyle);
     setSummary(result);
+
+    // 新しい履歴を作成
+    const newHistory: SummaryHistory = {
+      id: crypto.randomUUID(),
+      text,
+      summary: result,
+      summaryStyle,
+      createdAt: new Date().toISOString(),
+    };
+
+    // 既存の履歴の先頭に追加（最大保存件数はここで指定）
+    const updatedHistory = [newHistory, ...history].slice(0, 20);
+
+    // 保存して、画面側の state も更新
+    saveHistory(updatedHistory);
+    setHistory(updatedHistory);
+
   } catch (error) {
     console.error("要約に失敗しました", error);
     setErrorMessage("要約に失敗しました。もう一度お試しください。");
@@ -48,7 +68,13 @@ const handleSummarize = async () => {
   };
   // エラー表示
   const [errorMessage, setErrorMessage] = useState("");
-  
+  // ページ切り替え
+  const [currentView, setCurrentView] = useState<"summary" | "history">("summary");
+  // 履歴
+  const [history, setHistory] = useState<SummaryHistory[]>(
+    () => getHistory()
+  );
+
   return (
     <>
     <header className="header">
@@ -60,7 +86,25 @@ const handleSummarize = async () => {
       </div>
     </header>
     <main className="contents">
-      <section>
+      <div className="menuList">
+        <button
+          type="button"
+          onClick={() => setCurrentView("summary")}
+          className={currentView === "summary" ? 'active':''}
+        >
+          要約
+        </button>
+        <button
+          type="button"
+          onClick={() => setCurrentView("history")}
+          className={currentView === "history" ? 'active':''}
+        >
+          履歴
+        </button>
+      </div>
+      {currentView === "summary" ? (
+      // 要約
+      <section className="space-s">
         <div className="defaultBox">
           <div className="inputBox">
             <div className="inputBox_header">
@@ -90,7 +134,7 @@ const handleSummarize = async () => {
               <li>
                 <button
                 type="button"
-                className={summaryStyle === "normal" ? "active" : ""}
+                className={`normal ${summaryStyle === "normal" ? "active" : ""} `}
                 onClick={() => {
                   setSummaryStyle("normal");
                   setSummary("");
@@ -104,7 +148,7 @@ const handleSummarize = async () => {
               <li>
                 <button
                 type="button"
-                className={summaryStyle === "bullet" ? "active" : ""}
+                className={`bullet ${summaryStyle === "bullet" ? "active" : ""} `}
                 onClick={() => {
                   setSummaryStyle("bullet");
                   setSummary("");
@@ -118,7 +162,7 @@ const handleSummarize = async () => {
               <li>
                 <button
                 type="button"
-                className={summaryStyle === "simple" ? "active" : ""}
+                className={`simple ${summaryStyle === "simple" ? "active" : ""} `}
                 onClick={() => {
                   setSummaryStyle("simple");
                   setSummary("");
@@ -137,13 +181,11 @@ const handleSummarize = async () => {
               {isLoading ? "要約中…" : "文章を要約する"}
             </button>
           </div>
-
-{errorMessage && (
-  <p className="error-message" role="alert">
-    {errorMessage}
-  </p>
-)}
-
+          {errorMessage && (
+            <p className="error-message" role="alert">
+              {errorMessage}
+            </p>
+          )}
         </div>
         {summary && (
         <div className="defaultBox space-m">
@@ -165,6 +207,50 @@ const handleSummarize = async () => {
         </div>
         )}
       </section>
+      ) : (
+      // 履歴
+      <section className="space-s">
+        <div className="historyHeader">
+          <h2>履歴</h2>
+          <p className="historyHeader_text">最大20件まで保存され、21件目以降は古い順から削除されます。</p>
+        </div>
+        {history.length === 0 ? (
+          <div className="defaultBox">
+            <p className="space-s">履歴はまだありません。</p>
+          </div>
+        ) : (
+          <ul className="space-ss historyList">
+            {history.map((item) => (
+            <li className="historyList_item" key={item.id}>
+              <div className="defaultBox">
+                <p className="historyList_item_time">
+                  {new Date(item.createdAt).toLocaleString("ja-JP")}
+                </p>
+                <p className="historyList_item_style"><span className={
+                  item.summaryStyle === "normal" ? "normal" :
+                  item.summaryStyle === "bullet" ? "bullet" :
+                  item.summaryStyle === "simple" ? "simple" : ""
+                }>
+                {
+                  item.summaryStyle === "normal" ? "通常要約" :
+                  item.summaryStyle === "bullet" ? "箇条書き" :
+                  item.summaryStyle === "simple" ? "優しい表現" : ""
+                }</span></p>
+                <div className="space-s">
+                  <h3 className="historyList_item_inputTitle">元の文章</h3>
+                  <p className="historyList_item_inputText">{item.text}</p>
+                </div>
+                <div className="space-s">
+                  <h3 className="historyList_item_resultTitle">要約結果</h3>
+                  <p className="historyList_item_resultText">{item.summary}</p>
+                </div>
+              </div>
+            </li>
+            ))}
+          </ul>
+        )}
+      </section>
+      )}
       <div className="space-l note">
         <p>本アプリはポートフォリオおよび機能検証を目的としたデモサービスです。</p>
         <ul className="space-m note">
