@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './styles/App.css'
-import {createMockSummary, type SummaryStyle} from "./utils/summary";
+import type { SummaryStyle } from "./utils/summary";
+import { summarizeText } from "./services/summaryService";
 
 function App() {
   // 入力した文字
@@ -19,8 +20,8 @@ const handleSummarize = async () => {
   setErrorMessage("");
 
   try {
-    // 将来的にapiに書き換える
-    const result = await createMockSummary(text, summaryStyle);
+    // 外部api連携
+    const result = await summarizeText(text, summaryStyle);
     setSummary(result);
   } catch (error) {
     console.error("要約に失敗しました", error);
