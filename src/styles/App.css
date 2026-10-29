@@ -41,7 +41,7 @@
         position: absolute;
         height: 3rem;
         width: 3rem;
-        background-image: url(../public/favicon.svg);
+        background-image: url(/public/favicon.svg);
         background-size: 100%;
         left: 0;
         top: 0;
