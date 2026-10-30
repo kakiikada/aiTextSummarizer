@@ -15,47 +15,55 @@ function App() {
   // 結果を保存
   const [summary, setSummary] = useState("");
 
-const handleSummarize = async () => {
-  if (text.trim().length === 0) return;
+  const handleSummarize = async () => {
+    if (text.trim().length === 0) return;
 
-  setIsLoading(true);
-  setSummary("");
-  setErrorMessage("");
+    setIsLoading(true);
+    setSummary("");
+    setErrorMessage("");
 
-  try {
-    // 外部api連携
-    const result = await summarizeText(text, summaryStyle);
-    setSummary(result);
+    try {
+      // 外部api連携
+      const result = await summarizeText(text, summaryStyle);
+      setSummary(result);
 
-    // 新しい履歴を作成
-    const newHistory: SummaryHistory = {
-      id: crypto.randomUUID(),
-      text,
-      summary: result,
-      summaryStyle,
-      createdAt: new Date().toISOString(),
-    };
+      // 新しい履歴を作成
+      const newHistory: SummaryHistory = {
+        id: crypto.randomUUID(),
+        text,
+        summary: result,
+        summaryStyle,
+        createdAt: new Date().toISOString(),
+      };
 
-    // 既存の履歴の先頭に追加（最大保存件数はここで指定）
-    const updatedHistory = [newHistory, ...history].slice(0, 20);
+      // 既存の履歴の先頭に追加（最大保存件数はここで指定）
+      const updatedHistory = [newHistory, ...history].slice(0, 20);
 
-    // 保存して、画面側の state も更新
-    saveHistory(updatedHistory);
-    setHistory(updatedHistory);
+      // 保存して、画面側の state も更新
+      saveHistory(updatedHistory);
+      setHistory(updatedHistory);
 
-  } catch (error) {
-    console.error("要約に失敗しました", error);
-    setErrorMessage("要約に失敗しました。もう一度お試しください。");
-  } finally {
-    setIsLoading(false);
-  }
-};
+    } catch (error) {
+      console.error("要約に失敗しました", error);
+      setErrorMessage("要約に失敗しました。もう一度お試しください。");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   // 要約中
   const [isLoading, setIsLoading] = useState(false);
   // コピー機能
-  const handleCopy = async () => {
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const handleCopy = async (text: string, id: string) => {
     try {
-      await navigator.clipboard.writeText(summary);
+      await navigator.clipboard.writeText(text);
+
+      setCopiedId(id);
+
+      setTimeout(() => {
+        setCopiedId(null);
+      }, 1000);
+
     } catch (error) {
       console.error("コピーに失敗しました", error);
     }
@@ -194,8 +202,9 @@ const handleSummarize = async () => {
               <div className="resultBox_header">
                 <h3>要約結果</h3>
                 <button
+                  className={`toast ${copiedId === "summary" ? "active" : ""}`}
                   type="button"
-                  onClick={handleCopy}
+                  onClick={() => handleCopy(summary, "summary")}
                   disabled={!summary}
                 >
                   結果をコピー
@@ -236,13 +245,20 @@ const handleSummarize = async () => {
                   item.summaryStyle === "bullet" ? "箇条書き" :
                   item.summaryStyle === "simple" ? "優しい表現" : ""
                 }</span></p>
-                <div className="space-s">
-                  <h3 className="historyList_item_inputTitle">元の文章</h3>
-                  <p className="historyList_item_inputText">{item.text}</p>
+                <div className="space-s historyList_input">
+                  <h3 className="historyList_input_title">元の文章</h3>
+
+                  <p className="historyList_input_text">{item.text}</p>
                 </div>
-                <div className="space-s">
-                  <h3 className="historyList_item_resultTitle">要約結果</h3>
-                  <p className="historyList_item_resultText">{item.summary}</p>
+                <div className="space-s historyList_result">
+                  <h3 className="historyList_result_title">要約結果</h3>
+                  <button
+                    className={`historyList_result_copy toast ${copiedId === item.id ? "active" : ""}`}
+                    onClick={() => handleCopy(item.summary, item.id)}
+                  >
+                    結果をコピー
+                  </button>
+                  <p className="historyList_result_text">{item.summary}</p>
                 </div>
               </div>
             </li>

@@ -246,36 +246,72 @@
         }
       }
     }
-    .historyList_item_inputTitle,
-    .historyList_item_resultTitle,
-    .historyList_item_inputText,
-    .historyList_item_resultText {
+  }
+  .historyList_input, .historyList_result {
+    position: relative;
+    .historyList_input_title,
+    .historyList_result_title,
+    .historyList_input_text,
+    .historyList_result_text {
       padding: 0.5rem;
     }
-    .historyList_item_inputTitle,
-    .historyList_item_resultTitle {
+    .historyList_input_title,
+    .historyList_result_title {
       font-size: 0.75rem;
       color: var(--color-accent);
       display: inline-block;
       border-radius: 0.25rem 0.25rem 0 0;
     }
-    .historyList_item_inputText,
-    .historyList_item_resultText {
+    .historyList_input_text,
+    .historyList_result_text {
       max-height: 6rem;
       overflow-y: auto;
       margin-top: -1px;
     }
-    .historyList_item_inputTitle,
-    .historyList_item_inputText {
+    .historyList_input_title,
+    .historyList_input_text {
       background-color: var(--color-accent-light);
     }
-    .historyList_item_resultTitle,
-    .historyList_item_resultText {
+    .historyList_result_title,
+    .historyList_result_text {
       border: solid 1px var(--color-accent);
       background-color: var(--color-bg);
     }
-    .historyList_item_resultTitle {
-      border-bottom: none
+    .historyList_result_title {
+      border-bottom: none;
     }
+    .historyList_result_copy {
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 0.75rem;
+      padding: 0.375rem;
+      background-color: var(--color-bg);
+      color: var(--color-accent);
+      border-color: var(--color-accent);
+    }
+  }
+}
+.toast {
+  position: relative;
+  &::after {
+    content: 'コピーしました！';
+    position: absolute;
+    top: -1.5rem;
+    right: calc(50% - 3rem);
+    display: inline-block;
+    font-size: 0.625rem;
+    width: 6rem;
+    color: var(--color-accent);
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-accent);
+    padding: 0.125rem;
+    border-radius: 0.25rem;
+    opacity: 0;
+    transition: .5s;
+  }
+  &.active::after {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
