@@ -82,7 +82,33 @@ function App() {
   const [history, setHistory] = useState<SummaryHistory[]>(
     () => getHistory()
   );
+  // 履歴削除機能
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const handleDeleteHistory = (id: string) => {
+    const updatedHistory = history.filter(
+      (item) => item.id !== id
+    );
 
+    saveHistory(updatedHistory);
+    setHistory(updatedHistory);
+  };
+  // 削除確定
+  const confirmDelete = () => {
+    if (deleteTargetId === null) return;
+
+    handleDeleteHistory(deleteTargetId);
+    setDeleteTargetId(null);
+  };
+  // 削除キャンセル
+  const cancelDelete = () => {
+    setDeleteTargetId(null);
+  };
+  // 履歴の全削除
+  const [isDeleteAllOpen, setIsDeleteAllOpen] = useState(false);
+  const handleDeleteAllHistory = () => {
+    saveHistory([]);
+    setHistory([]);
+  };
   return (
     <>
     <header className="header">
@@ -182,6 +208,7 @@ function App() {
               </li>
             </ul>
             <button
+              type="button"
               className="space-m inputBox_btn" 
               disabled={text.trim().length === 0 || isLoading}
               onClick={handleSummarize}
@@ -202,8 +229,8 @@ function App() {
               <div className="resultBox_header">
                 <h3>要約結果</h3>
                 <button
-                  className={`toast ${copiedId === "summary" ? "active" : ""}`}
                   type="button"
+                  className={`toast ${copiedId === "summary" ? "active" : ""}`}
                   onClick={() => handleCopy(summary, "summary")}
                   disabled={!summary}
                 >
@@ -222,16 +249,22 @@ function App() {
         <div className="historyHeader">
           <h2>履歴</h2>
           <p className="historyHeader_text">最大20件まで保存され、21件目以降は古い順から削除されます。</p>
+          <button
+            type="button"
+            className="historyHeader_clear"
+            onClick={() => setIsDeleteAllOpen(true)}
+            disabled={history.length === 0}
+          >全削除</button>
         </div>
         {history.length === 0 ? (
-          <div className="defaultBox">
-            <p className="space-s">履歴はまだありません。</p>
+          <div className="defaultBox space-ss ">
+            <p>履歴はまだありません。</p>
           </div>
         ) : (
           <ul className="space-ss historyList">
             {history.map((item) => (
-            <li className="historyList_item" key={item.id}>
-              <div className="defaultBox">
+            <li className="defaultBox" key={item.id}>
+              <div className="historyList_item">
                 <p className="historyList_item_time">
                   {new Date(item.createdAt).toLocaleString("ja-JP")}
                 </p>
@@ -245,6 +278,11 @@ function App() {
                   item.summaryStyle === "bullet" ? "箇条書き" :
                   item.summaryStyle === "simple" ? "優しい表現" : ""
                 }</span></p>
+                <button
+                  type="button"
+                  className="historyList_item_clear"
+                  onClick={() => setDeleteTargetId(item.id)}
+                >削除</button>
                 <div className="space-s historyList_input">
                   <h3 className="historyList_input_title">元の文章</h3>
 
@@ -253,6 +291,7 @@ function App() {
                 <div className="space-s historyList_result">
                   <h3 className="historyList_result_title">要約結果</h3>
                   <button
+                    type="button"
                     className={`historyList_result_copy toast ${copiedId === item.id ? "active" : ""}`}
                     onClick={() => handleCopy(item.summary, item.id)}
                   >
@@ -279,6 +318,56 @@ function App() {
         </ul>
       </div>
     </main>
+    {/* 削除用ポップアップ */}
+    {deleteTargetId !== null && (
+      <div className="modalOverlay">
+        <div className="modal">
+          <h3>履歴を削除しますか？</h3>
+          <p>削除した履歴は元に戻せません。</p>
+          <div className="modal_button">
+            <button
+              type="button"
+              onClick={cancelDelete}
+            >
+              キャンセル
+            </button>
+            <button
+              type="button"
+              onClick={confirmDelete}
+            >
+              削除する
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    {/* 全削除用ポップアップ */}
+    {isDeleteAllOpen && (
+      <div className="modalOverlay">
+        <div className="modal">
+          <h3>すべての履歴を削除しますか？</h3>
+          <p>すべての履歴が削除されます。この操作は元に戻せません。</p>
+          <div className="modal_button">
+            <button
+              type="button"
+              onClick={() => setIsDeleteAllOpen(false)}
+            >
+              キャンセル
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                handleDeleteAllHistory();
+                setIsDeleteAllOpen(false);
+              }}
+            >
+              すべて削除
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     </>
   )
 }

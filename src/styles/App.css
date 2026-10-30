@@ -4,10 +4,14 @@
   padding: var(--space-s);
 }
 .defaultBox {
+  position: relative;
   padding: var(--space-s);
   box-shadow: var(--shadow);
   border-radius: var(--radius);
   background-color: var(--color-bg);
+  & + & {
+    margin-top: var(--space-m);
+  }
 }
 .space-ss {
   margin-top: var(--space-ss);
@@ -208,17 +212,32 @@
   }
 }
 .historyHeader {
+  position: relative;
   .historyHeader_text {
     font-size: 0.75rem;
     margin-top: var(--space-ss);
     color: var(--color-text-light);
   }
+  .historyHeader_clear {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: var(--color-base);
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    &:disabled {
+      color: var(--color-bg);
+    }
+    &:hover {
+      color: var(--color-bg);
+      border-color: var(--color-accent-dark);
+      background-color: var(--color-accent-dark);
+    }
+  }
 }
 .historyList {
   .historyList_item {
-    & + & {
-      margin-top: var(--space-m);
-    }
+    position: relative;
     .historyList_item_time {
       font-size: 0.75rem;
       color: var(--color-text-light);
@@ -244,6 +263,19 @@
         &.simple {
           background-color: var(--color-simple);
         }
+      }
+    }
+    .historyList_item_clear {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background-color: var(--color-base);
+      color: var(--color-accent);
+      border-color: var(--color-accent);
+      &:hover {
+        color: var(--color-bg);
+        border-color: var(--color-accent-dark);
+        background-color: var(--color-accent-dark);
       }
     }
   }
@@ -289,6 +321,9 @@
       background-color: var(--color-bg);
       color: var(--color-accent);
       border-color: var(--color-accent);
+      &:hover {
+        background-color: var(--color-accent-light);
+      }
     }
   }
 }

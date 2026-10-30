@@ -5,8 +5,9 @@
   --color-text-light: #979189;
   --color-accent: #C87558;
   --color-accent-light: #F3E5DE;
+  --color-accent-dark: #a8241b;
   --color-border: #E8E1DA;
-  --color-danger: #B42318;
+  --color-danger: #a8241b;
 
   --color-normal: #C87558;
   --color-normal-light: #F3E5DE;
@@ -46,7 +47,12 @@ body {
   font-family: var(--font-family);
   color: var(--color-text);
   margin: 0;
+  background-image: url(../assets/main-bg-2.svg);
+  background-size: cover;
   background-color: var(--color-base);
+
+
+  
 
   font-size: 1rem;
   @media (max-width: 769px) {
@@ -81,5 +87,30 @@ input[type = submit], button {
       background-color: var(--color-accent-light);
       color: var(--color-accent);
     }
+  }
+}
+/* 削除用ポップアップ */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal {
+  background: #fffaf2;
+  padding: var(--space-m);
+  border-radius: var(--radius);
+  width: min(90%, 360px);
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+
+  .modal_button {
+    display: flex;
+    margin-top: var(--space-m);
+    justify-content: center;
+    gap: var(--space-ss);
   }
 }
